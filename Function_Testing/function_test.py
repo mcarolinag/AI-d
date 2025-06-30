@@ -31,12 +31,12 @@ def closest_projects(input: DescriptionInput):
     query_corpus = ('Project Title: ' + input.title + ' ' + 'Description: ' +input.description
                     + ' Province: ' + input.province)
     embedder = SentenceTransformer("intfloat/multilingual-e5-large-instruct")
-    corpus_embeddings = torch.load('corpus_embeddings.pt')
+    corpus_embeddings = torch.load('../Front_End/corpus_embeddings.pt')
     top_k = min(input.num_projects, len(corpus_embeddings))
     query_embedding = embedder.encode(query_corpus, convert_to_tensor=True)
     max_distance = input.radius
 
-    file_path = 'OECD_Project_Data_Final(6.1).xlsx'
+    file_path = '../Front_End/OECD_Project_Data_Final(6.1).xlsx'
     all_projects = pd.read_excel(file_path)
 
     if input.disable_radius:
@@ -49,7 +49,7 @@ def closest_projects(input: DescriptionInput):
         results_info=pd.merge(results,all_projects.reset_index(), on=['index'])
 
     else:
-        coords_file= 'Province_Latitude_Longitude.xlsx'
+        coords_file= '../Front_End/Province_Latitude_Longitude.xlsx'
         province_coords = pd.read_excel(coords_file)
         coords_query_=province_coords[province_coords['Province']==input.province]
         coords_query = (coords_query_['Latitude'].values[0], coords_query_['Longitude'].values[0])
