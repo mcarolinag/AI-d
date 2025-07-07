@@ -1,7 +1,9 @@
 # Import necessary modules
-from fastapi import FastAPI                  # For building the web API
+from fastapi import FastAPI                 # For building the web API
 from fastapi.middleware.cors import CORSMiddleware  # To allow communication between frontend and backend
 from pydantic import BaseModel               # To define the expected format of incoming JSON data
+from get_project import get_projects  
+
 
 #imports for closest_projects
 import torch
@@ -9,8 +11,39 @@ from sentence_transformers import SentenceTransformer
 import pandas as pd
 import geopy.distance
 
+#Connect to Front End
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+
 # Create a FastAPI instance
 app = FastAPI()
+
+# Mount the 'static' directory for serving static files like CSS/JS/HTML
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_html():
+    with open("static/Ai_d_main.html", "r", encoding="utf-8") as file:
+        html_content = file.read()
+    return html_content
+
+@app.get("/Ai_d_main.html", response_class=HTMLResponse)
+async def serve_html():
+    with open("static/Ai_d_main.html", "r", encoding="utf-8") as file:
+        html_content = file.read()
+    return html_content
+
+@app.get("/Second_Boot.html", response_class=HTMLResponse)
+async def serve_html():
+    with open("static/Second_Boot.html", "r", encoding="utf-8") as file:
+        html_content = file.read()
+    return html_content
+
+@app.get("/result.html", response_class=HTMLResponse)
+async def serve_html():
+    with open("static/result.html", "r", encoding="utf-8") as file:
+        html_content = file.read()
+    return html_content
 
 # Add CORS middleware to allow the frontend (HTML/JS) to make requests to this backend
 app.add_middleware(
@@ -31,29 +64,14 @@ class DescriptionInput(BaseModel):
     disable_radius: bool
     num_projects: int
 
-def input_check(input: DescriptionInput):
-    result = {
-        "Title": input.title,
-        "Province": input.province,
-        "Description": input.description,
-        "DisableRadius": input.disable_radius,
-        "NumProjects": input.num_projects
-    }
-
-    # Only include Radius if DisableRadius is False
-    if not input.disable_radius:
-        result["Radius"] = input.radius
-
-    return result
-
-
 def closest_projects(input: DescriptionInput):
     query_corpus = ('Project Title: ' + input.title + ' ' + 'Description: ' + input.description
                     + ' Province: ' + input.province)
     embedder = SentenceTransformer("intfloat/multilingual-e5-large-instruct")
-    corpus_embeddings = torch.load('corpus_embeddings.pt')
+    corpus_embeddings = torch.load('corpus_embeddings.pt').cpu()
     top_k = min(input.num_projects, len(corpus_embeddings))
-    query_embedding = embedder.encode(query_corpus, convert_to_tensor=True)
+    query_embedding = embedder.encode(query_corpus, convert_to_tensor=True).cpu()
+    
     max_distance = input.radius
 
     file_path = 'OECD_Project_Data_Final(6.1).xlsx'
@@ -99,6 +117,11 @@ def closest_projects(input: DescriptionInput):
 
 # Define a POST route (API endpoint) called /input_check
 # This async function calls the input_check() function and returns its result
-@app.post("/input_check")
-async def check_output(input: DescriptionInput):
-    return input_check(input)
+
+@app.post("/get_projects")
+async def fetch_projects(input: DescriptionInput):
+    try:
+        df = closest_projects(input)
+        return get_projects(df)
+    except Exception as e:
+        return {"error": str(e)}

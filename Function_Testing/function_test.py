@@ -68,6 +68,7 @@ def closest_projects(input: DescriptionInput):
     return results_info          
 
 results1=closest_projects(test1)
-
+print('results1', results1 )
 
 results2=closest_projects(test2)
+print('results2', results2 )
