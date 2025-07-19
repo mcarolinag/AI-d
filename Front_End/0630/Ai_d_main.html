@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Against Aid Waste</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    .btn-custom {
+      background-color: #2980b9;
+      border: none;
+    }
+    .btn-custom:hover {
+      background-color: #21618c;
+    }
+  </style>
+</head>
+<body class="bg-secondary text-dark">
+
+  <div class="min-vh-100 d-flex justify-content-center align-items-center">
+    <div class="bg-white rounded-4 shadow-lg w-75 overflow-hidden">
+
+      <!-- Top Image -->
+      <div class="text-center py-4">
+        <img src="aid_image.png" alt="Aid Project Image" class="img-fluid" style="max-width: 320px; border-radius: 10px;" />
+      </div>
+
+      <!-- Title and Subtitle -->
+      <h1 class="text-center fw-bold display-5 text-dark mb-1">AI Against Aid Waste</h1>
+      <h3>  </h3> <!-- Just for Indent -->
+      <p class="text-center fst-italic fs-4 text-dark mb-4">Detecting Funding Redundancy With NLP</p>
+
+      <!-- Background Description -->
+      <div class="bg-primary-subtle px-5 py-4 mb-4 w-100">
+        <h5 class="fw-semibold text-start mb-3">🗂️ Background</h5>
+        <p class="text-dark fs-5 mb-0" style="text-align: justify; text-indent: 30px;">
+          <strong>Every year, over $200 billion is poured into global development aid — yet millions are quietly lost to duplicated efforts.</strong>
+          Without smart systems to detect overlap, donor organizations often fund projects that already exist, wasting precious resources.
+          Our tool changes that. By using AI to instantly identify similar initiatives across agencies and regions, we help ensure every dollar supports
+          a truly unique, high-impact intervention — not another copy of what’s already been done.
+        </p>
+      </div>
+
+      <!-- Viz Placeholder -->
+      <div class="px-5">
+        <h5 class="fw-semibold text-start mb-3">🧮 This is Where the Viz for Problem Statement Will be Displayed</h5>
+        <div class="text-center mb-4">
+          <img src="Aid_flow.png" alt="Aid Flow Diagram" class="img-fluid" style="max-width: 320px; border-radius: 10px;" />
+        </div>
+
+        <!-- Try Button (Centered and Blue with Hover Effect) -->
+        <div class="text-center mb-4">
+          <button class="btn btn-custom btn-lg px-5 py-3 rounded-3 text-white fw-bold" onclick="window.location.href='Second_Boot.html'">
+            Try it Now!
+          </button>
+        </div>
+
+        <!-- Bottom Logo -->
+        <div class="text-center mb-4">
+          <img src="logo.png" alt="UC Berkeley Logo" class="img-fluid" style="max-width: 180px;" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!--Anaconda Prompt Execution code: python -m uvicorn main:app --reload --> 
