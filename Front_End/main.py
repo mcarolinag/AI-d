@@ -6,10 +6,19 @@ from get_project import get_projects
 
 
 #imports for closest_projects
-import torch
-from sentence_transformers import SentenceTransformer
 import pandas as pd
-import geopy.distance
+#from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from qdrant_client import QdrantClient
+
+from qdrant_client.http.models import Distance, VectorParams
+from langchain.vectorstores import Qdrant
+#from langchain_qdrant import Qdrant
+from langchain.schema import Document
+from qdrant_client.http import models
+from qdrant_client.http.models import Filter, FieldCondition, Range
+
+
 
 #Connect to Front End
 from fastapi.responses import HTMLResponse
@@ -67,45 +76,51 @@ class DescriptionInput(BaseModel):
 def closest_projects(input: DescriptionInput):
     query_corpus = ('Project Title: ' + input.title + ' ' + 'Description: ' + input.description
                     + ' Province: ' + input.province)
-    embedder = SentenceTransformer("intfloat/multilingual-e5-large-instruct")
-    corpus_embeddings = torch.load('corpus_embeddings.pt').cpu()
-    top_k = min(input.num_projects, len(corpus_embeddings))
-    query_embedding = embedder.encode(query_corpus, convert_to_tensor=True).cpu()
-    
-    max_distance = input.radius
 
-    file_path = 'OECD_Project_Data_Final(6.1).xlsx'
-    all_projects = pd.read_excel(file_path)
+    embedding_model = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large-instruct")
+
+    collection_name = "Iraq aid projects"
+
+    # Local embedded client (on-disk)
+    client = QdrantClient(
+        path="./qdrant_data"  # make sure no other instance is using this path
+    )
+    vectorstore = Qdrant(
+        client=client,
+        collection_name=collection_name,
+        embeddings=embedding_model,
+    )
+
+
 
     if input.disable_radius:
 
         # Find the closest 5 sentences of the corpus for each query sentence based on cosine similarity
         # We use cosine-similarity and torch.topk to find the highest 5 scores
-        similarity_scores = embedder.similarity(query_embedding, corpus_embeddings)[0]
-        scores, indices = torch.topk(similarity_scores, k=top_k)
-        results = pd.DataFrame(list(zip(indices.tolist(), scores.tolist())), columns=['index', 'score'])
-        results_info = pd.merge(results, all_projects.reset_index(), on=['index'])
+
+        similar_docs = vectorstore.similarity_search_with_score(
+            query=query_corpus,
+            k=input.num_projects
+        )
+
 
     else:
-        coords_file = 'Province_Latitude_Longitude.xlsx'
-        province_coords = pd.read_excel(coords_file)
-        coords_query_ = province_coords[province_coords['Province'] == input.province]
-        coords_query = (coords_query_['Latitude'].values[0], coords_query_['Longitude'].values[0])
-        all_projects['distances'] = all_projects[['Latitude', 'Longitude']].apply(
-            lambda x: geopy.distance.geodesic(coords_query, (x['Latitude'], x['Longitude'])).km, axis=1)
+        max_distance = input.radius
+        key_ = f"distance_{input.province}"
+        similar_docs = vectorstore.similarity_search_with_score(
+            k=input.num_projects,
+            query=query_corpus,
+            filter=models.Filter(must=[models.FieldCondition(key=f"metadata.{key_}",
+                                                             range=models.Range(lte=max_distance))])
+        )
 
-        max_dist_projects = all_projects[all_projects['distances'] <= max_distance].reset_index()
+    df_test = pd.DataFrame(similar_docs)
+    df_test.columns = ['doc', 'score']
+    df_test['metadata'] = df_test.apply(lambda x: x['doc'].metadata, axis=1)
+    df_results = pd.DataFrame(df_test['metadata'].to_list())
+    df_results['score'] = df_test['score']
 
-        # We use cosine-similarity and torch.topk to find the highest 5 scores
-        similarity_scores = \
-            embedder.similarity(query_embedding, corpus_embeddings[max_dist_projects['index'].values, :])[0]
-        scores, indices = torch.topk(similarity_scores, k=top_k)
-        results = pd.DataFrame(list(zip(max_dist_projects.iloc[indices.tolist()]['index'].values, scores.tolist())),
-                               columns=['index', 'score'])
-        results_info = pd.merge(results, max_dist_projects, on=['index'])
-
-    return results_info
-
+    return df_results
 # Define a POST route (API endpoint) called /wordcount
 # Here the input is the class defined above, (which is the input coming from the frontend)
 # input.description is the description object inside the DescriptionInput class
