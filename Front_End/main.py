@@ -14,7 +14,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 from langchain.vectorstores import Qdrant
 #from langchain_qdrant import Qdrant
-from langchain.schema import Document
+
 from qdrant_client.http import models
 from qdrant_client.http.models import Filter, FieldCondition, Range
 
