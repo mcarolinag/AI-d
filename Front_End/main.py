@@ -72,6 +72,7 @@ class DescriptionInput(BaseModel):
     radius: int
     disable_radius: bool
     num_projects: int
+    broad_sector:str
 
 def closest_projects(input: DescriptionInput):
     query_corpus = ('Project Title: ' + input.title + ' ' + 'Description: ' + input.description
@@ -100,20 +101,31 @@ def closest_projects(input: DescriptionInput):
 
         similar_docs = vectorstore.similarity_search_with_score(
             query=query_corpus,
-            k=input.num_projects
+            k=input.num_projects,
+            filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="metadata.BroadSector",  # Metadata field to filter on
+                        match=models.MatchValue(value=input.broad_sector)  # Value to match
+                    )
+                ]
+            )
         )
-
-
     else:
         max_distance = input.radius
         key_ = f"distance_{input.province}"
         similar_docs = vectorstore.similarity_search_with_score(
-            k=input.num_projects,
-            query=query_corpus,
-            filter=models.Filter(must=[models.FieldCondition(key=f"metadata.{key_}",
-                                                             range=models.Range(lte=max_distance))])
+            k=5,
+            query=query_corpus ,
+            filter=models.Filter(must=[models.FieldCondition(
+                                            key=f"metadata.{key_}",
+                                            range=models.Range(lte=max_distance)),
+                                       models.FieldCondition(
+                                           key="metadata.BroadSector",
+                                           match=models.MatchValue(value=input.broad_sector))
+                                       ]
+            )
         )
-
     df_test = pd.DataFrame(similar_docs)
     df_test.columns = ['doc', 'score']
     df_test['metadata'] = df_test.apply(lambda x: x['doc'].metadata, axis=1)

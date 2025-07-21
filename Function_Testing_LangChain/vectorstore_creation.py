@@ -9,15 +9,17 @@ from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams
 
 #Loading the data
-file_path = '../Front_End/OECD_Project_Data_Final(6.1).xlsx'
-all_projects = pd.read_excel(file_path)
+file_path = 'OECD_Project_Data_Final(6.1) (sector).csv'
+
+
+all_projects = pd.read_csv(file_path)
 
 all_projects=all_projects[['Year', 'DonorCode', 'DonorName', 'AgencyName', 'CrsID',
        'RecipientName', 'RegionName', 'FlowName', 'USD_Commitment',
        'CurrencyCode', 'ShortDescription', 'ProjectTitle', 'Province',
        'Latitude', 'Longitude', 'PurposeCode', 'PurposeName', 'SectorCode',
        'SectorName', 'ExpectedStartDate', 'CompletionDate', 'LongDescription',
-       'Name_of_Donor']].reset_index().rename(columns={'index':'doc_id'})
+       'Name_of_Donor','BroadSector']].reset_index().rename(columns={'index':'doc_id'})
 
 coords_file= 'Province_Latitude_Longitude.xlsx'
 province_coords = pd.read_excel(coords_file)
