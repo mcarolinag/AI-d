@@ -72,7 +72,7 @@ class DescriptionInput(BaseModel):
     radius: int
     disable_radius: bool
     num_projects: int
-    broad_sector:str
+    sector:str
 
 def closest_projects(input: DescriptionInput):
     query_corpus = ('Project Title: ' + input.title + ' ' + 'Description: ' + input.description
@@ -106,7 +106,7 @@ def closest_projects(input: DescriptionInput):
                 must=[
                     models.FieldCondition(
                         key="metadata.BroadSector",  # Metadata field to filter on
-                        match=models.MatchValue(value=input.broad_sector)  # Value to match
+                        match=models.MatchValue(value=input.sector)  # Value to match
                     )
                 ]
             )
@@ -122,7 +122,7 @@ def closest_projects(input: DescriptionInput):
                                             range=models.Range(lte=max_distance)),
                                        models.FieldCondition(
                                            key="metadata.BroadSector",
-                                           match=models.MatchValue(value=input.broad_sector))
+                                           match=models.MatchValue(value=input.sector))
                                        ]
             )
         )
