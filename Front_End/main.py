@@ -8,7 +8,7 @@ from get_project import get_projects
 #imports for closest_projects
 import pandas as pd
 #from langchain.embeddings import HuggingFaceEmbeddings
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from qdrant_client import QdrantClient
 
 from qdrant_client.http.models import Distance, VectorParams

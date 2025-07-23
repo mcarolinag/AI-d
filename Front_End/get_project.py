@@ -6,7 +6,7 @@ def get_projects(df):
     df = df.rename(columns={
         "score": "Score",
         "ProjectTitle": "Project_Title",
-        "SectorName": "Sector",
+        "BroadSector": "Sector",
         "LongDescription": "Project_Description"  
     })
 
