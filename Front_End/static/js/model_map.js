@@ -11,7 +11,8 @@ function fetchModelProjects() {
     description: sessionStorage.getItem("projectDescription"),
     radius: parseInt(sessionStorage.getItem("radius_test") || "50"),
     disable_radius: sessionStorage.getItem("disableRadius_test") === "true",
-    num_projects: parseInt(sessionStorage.getItem("numProjects_test") || "5")
+    num_projects: parseInt(sessionStorage.getItem("numProjects_test") || "5"),
+    sector: sessionStorage.getItem("sector_test") || "Other"
   };
 
   fetch("http://127.0.0.1:8000/get_projects", {
@@ -35,8 +36,9 @@ function fetchModelProjects() {
             ProjectTitle: payload.title,
             ProjectDescription: payload.description,
             Province: payload.province,
-            Sector: "Your Query",
-            Score: 1.0
+            Sector: payload.sector,
+            Score: 1.0,
+            Category: "Query"
           }
         };
 
@@ -55,7 +57,8 @@ function fetchModelProjects() {
                 ProjectTitle: d.Project_Title,
                 ProjectDescription: d.Project_Description,
                 Province: d.Province,
-                Sector: "Similar Project"
+                Sector: d.Sector,
+                Category: "Similar"
               }
             }))
           ]
@@ -103,7 +106,7 @@ function initMap(data) {
       id: "similar-projects",
       type: "circle",
       source: "points",
-      filter: ["==", ["get", "Sector"], "Similar Project"],
+      filter: ["==", ["get", "Category"], "Similar"],
       paint: {
         "circle-color": "#DC143C", // crimson red
         "circle-radius": 8,
@@ -117,7 +120,7 @@ function initMap(data) {
       id: "query-project",
       type: "circle",
       source: "points",
-      filter: ["==", ["get", "Sector"], "Your Query"],
+      filter: ["==", ["get", "Category"], "Query"],
       paint: {
         "circle-color": "#00AA00", // green
         "circle-radius": 10,
