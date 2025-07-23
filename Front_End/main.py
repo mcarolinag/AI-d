@@ -115,7 +115,7 @@ def closest_projects(input: DescriptionInput):
         max_distance = input.radius
         key_ = f"distance_{input.province}"
         similar_docs = vectorstore.similarity_search_with_score(
-            k=5,
+            k=input.num_projects,     
             query=query_corpus ,
             filter=models.Filter(must=[models.FieldCondition(
                                             key=f"metadata.{key_}",
