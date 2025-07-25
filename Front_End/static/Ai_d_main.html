@@ -8,6 +8,23 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="/static/style.css" rel="stylesheet" />
   <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #bg-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: contain;
+      z-index: -1;
+    }
+
     .btn-custom {
       background-color: #2980b9;
       border: none;
@@ -16,7 +33,6 @@
       background-color: #21618c;
     }
 
-    /* Drop-in Animation for Image */
     .drop-in {
       animation: dropFromTop 1.2s ease-out forwards;
       opacity: 0;
@@ -35,7 +51,13 @@
     }
   </style>
 </head>
-<body class="bg-secondary text-dark">
+<body class="text-dark">
+
+  <!--  Background Video -->
+  <video autoplay muted loop playsinline id="bg-video">
+    <source src="/static/images/10sec_slow.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
 
   <div class="min-vh-100 d-flex justify-content-center align-items-center">
     <div class="bg-white rounded-4 shadow-lg w-75 overflow-hidden py-5" style="min-height: 700px;">
@@ -66,7 +88,6 @@
       <div class="text-center mb-4">
         <img src="/static/images/logo.png" alt="UC Berkeley Logo" class="img-fluid" style="max-width: 180px;" />
       </div>
-
     </div>
   </div>
 
@@ -74,5 +95,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
 <!--Anaconda Prompt Execution code: python -m uvicorn main:app --reload -->  

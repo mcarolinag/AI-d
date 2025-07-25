@@ -20,18 +20,40 @@
       left: 0.75rem;
     }
     .uniform-input {
-      height: calc(3.25rem + 2px); /* uniform height */
+      height: calc(3.25rem + 2px); 
       padding-top: 0.6rem;
       padding-bottom: 0.6rem;
     }
     .image-row img {
       height: 80px;
       object-fit: contain;
+    }.bg-image-container {
+      position: relative;
+      background-image: url('/static/images/human_globe.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .bg-image-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.5); 
+      z-index: 1;
+    }
+
+    .bg-white.rounded-4 {
+      position: relative;
+      z-index: 2; 
     }
   </style>
 </head>
 <body class="bg-light text-dark">
-  <div class="bg-secondary min-vh-100 d-flex justify-content-center align-items-center">
+  <div class="container-fluid bg-image-container d-flex justify-content-center align-items-center min-vh-100">
     <div class="bg-white rounded-4 shadow-lg w-75 px-4">
       <h6 class="invisible mb-4">Spacer</h6>
       <h2 class="invisible mb-4">Spacer</h2>
@@ -39,18 +61,18 @@
       <div class="pb-5 px-4 py-4 rounded-4" style="background-color: white;">
         <!-- Project Title + Project Count -->
         <div class="mt-4 mb-5 row gx-4 align-items-start">
-          <!-- Project Title - reduced from col-md-9 to col-md-5 -->
+          <!-- Project Title -->
           <div class="col-md-6 position-relative">
-            <div class="fw-bold px-3 py-2 d-inline-block position-absolute top-0 start-0 label-align ms-2"
+            <div class="fw-bold px-3 py-2 d-inline-block position-absolute top-0 start-0 label-align"
                 style="transform: translateY(-100%); background-color: transparent;">
               Project Title
             </div>
             <input type="text" class="form-control border-secondary border-2 uniform-input" id="projectTitle" placeholder="Enter project title..." />
           </div>
 
-          <!-- ✅ NEW Sector Dropdown - col-md-4 -->
+          <!-- Sector -->
           <div class="col-md-3 position-relative">
-            <div class="fw-bold px-3 py-2 d-inline-block position-absolute top-0 start-0 label-align ms-2"
+            <div class="fw-bold px-3 py-2 d-inline-block position-absolute top-0 start-0 label-align"
                 style="transform: translateY(-100%); background-color: transparent;">
               Sector
             </div>
@@ -69,7 +91,7 @@
             </select>
           </div>
 
-          <!-- Unchanged: Number of Projects to Display - still col-md-3 -->
+          <!-- Number of Projects to Display-->
           <div class="col-md-3 position-relative">
             <div class="fw-bold px-3 py-2 d-inline-block position-absolute top-0 start-0 label-align"
                 style="transform: translateY(-100%); background-color: transparent;">
@@ -87,7 +109,7 @@
         <div class="mb-5">
           <div class="row gx-4 align-items-start">
             <div class="col-md-4 position-relative">
-              <div class="fw-bold px-3 py-2 d-inline-block position-absolute label-align"
+              <div class="fw-bold px-1 py-2 d-inline-block position-absolute label-align"
                    style="top: 0.6rem; transform: translateY(-100%); background-color: transparent;">
                 Province
               </div>
@@ -113,14 +135,25 @@
               </select>
             </div>
 
-            <div class="col-md-5 position-relative">
-              <div class="fw-bold px-3 py-2 d-inline-block position-absolute label-align"
-                   style="top: 0.6rem; transform: translateY(-100%); background-color: transparent;">
-                Max Radius (km)
-                <span class="fst-italic text-muted ms-2" style="font-weight: normal;">Search radius from province</span>
+            <div class="col-md-5">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex">
+                  <div class="fw-bold me-2">Max Radius (km)</div>
+                  <div class="fst-italic text-muted" style="font-weight: normal;">Search radius from province</div>
+                </div>
+                <!-- Live Radius Value -->
+                <div id="radiusDisplay"
+                    class="bg-light text-dark px-2 py-1 rounded small border"
+                    style="min-width: 70px; text-align: center; font-size: 1.0rem;">
+                  150.0 km
+                </div>
               </div>
-              <input type="range" class="form-range mt-3" id="radiusSlider" min="0" max="300" value="150"
-                     style="background-color: #e0e0e0; height: 0.8rem;" />
+
+              <!-- Slider Input -->
+              <input type="range" class="form-range" id="radiusSlider" min="0" max="300" step="0.1" value="150"
+                    style="background-color: #e0e0e0; height: 0.8rem;" />
+
+              <!-- Range Labels -->
               <div class="d-flex justify-content-between range-labels px-1 mt-1">
                 <span>0</span>
                 <span>150</span>
@@ -129,7 +162,7 @@
             </div>
 
             <div class="col-md-3 position-relative">
-              <div class="fw-bold px-3 py-2 d-inline-block position-absolute label-align"
+              <div class="fw-bold px-1 py-2 d-inline-block position-absolute label-align"
                    style="top: 0.6rem; transform: translateY(-100%); background-color: transparent;">
                 Disable Max Radius
               </div>
@@ -144,7 +177,7 @@
 
         <!-- Project Description -->
         <div class="mt-4 mb-3 position-relative">
-          <div class="fw-bold px-3 py-2 d-inline-block position-absolute top-0 start-0 label-align"
+          <div class="fw-bold px-1 py-2 d-inline-block position-absolute top-0 start-0 label-align"
                style="transform: translateY(-100%); background-color: transparent;">
             Project Description
           </div>
@@ -179,7 +212,7 @@
     async function submitDescription() {
       const title = document.getElementById("projectTitle").value;
       const province = document.getElementById("provinceSelect").value;
-      const sector = document.getElementById("sectorSelect").value;  // ✅ new
+      const sector = document.getElementById("sectorSelect").value;  
       const description = document.getElementById("projectDescription").value;
       const radius = parseInt(document.getElementById("radiusSlider").value);
       const disableRadius = document.getElementById("disableRadius").checked;
@@ -188,7 +221,7 @@
       sessionStorage.setItem("numProjects_test", numProjects);
       sessionStorage.setItem("projectTitle", title);
       sessionStorage.setItem("province", province);
-      sessionStorage.setItem("sector_test", sector);  // ✅ new
+      sessionStorage.setItem("sector_test", sector);
       sessionStorage.setItem("projectDescription", description);
       sessionStorage.setItem("radius_test", radius);
       sessionStorage.setItem("disableRadius_test", disableRadius);
@@ -222,6 +255,14 @@
 
       window.location.href = "result.html";
     }
+  </script>
+  <script>
+    const radiusSlider = document.getElementById("radiusSlider");
+    const radiusDisplay = document.getElementById("radiusDisplay");
+
+    radiusSlider.addEventListener("input", () => {
+      radiusDisplay.textContent = `${parseFloat(radiusSlider.value).toFixed(1)} km`;
+    });
   </script>
 
 </body>

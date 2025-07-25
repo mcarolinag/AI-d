@@ -10,10 +10,37 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-</head>
-<body class="bg-light py-5 d-flex justify-content-center align-items-start">
+  <style>
+    .bg-image-container {
+      position: relative;
+      background-image: url('/static/images/human_globe.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
 
-  <!-- 🔄 Loading Overlay -->
+    .bg-image-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.5); 
+      z-index: 0;
+    }
+
+    .container.bg-white.rounded-4.shadow-lg {
+      position: relative;
+      z-index: 1; 
+    }
+  </style>
+</head>
+<body class="bg-image-container py-5 d-flex justify-content-center align-items-start">
+
+  <!--  Loading Overlay -->
   <div id="loadingOverlay" style="
     position: fixed;
     top: 0;
@@ -80,8 +107,11 @@
       </div>
     </div>
 
-    <!-- 📦 Project Recommendations Section -->
+    <!--  Project Recommendations Section -->
     <h4 class="mb-3 mt-5 fw-semibold">📦 Similar Projects Detected</h4>
+    <p class="fst-italic text-secondary mb-3">
+      The score represents similarity with the query project. Projects scoring above 90 are highly similar (green), those between 85–90 are moderately similar (yellow), and scores below 85 indicate low similarity (red).
+    </p>
     <div id="projectListGroup" class="list-group mb-4">
     <!-- JavaScript will insert project cards here -->
     </div>
@@ -108,7 +138,7 @@
           const projects = await response.json();
 
           const container = document.getElementById("projectListGroup");
-          container.innerHTML = "";  // Clear previous results if any
+          container.innerHTML = ""; 
 
           projects.forEach((proj, idx) => {
             const item = document.createElement("div");
@@ -148,7 +178,7 @@
             container.appendChild(item);
           });
 
-          // ✅ Hide overlay after results load
+          // Hide overlay after results load
           document.getElementById("loadingOverlay").style.display = "none";
 
         } catch (error) {
