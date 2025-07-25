@@ -7,7 +7,8 @@ def get_projects(df):
         "score": "Score",
         "ProjectTitle": "Project_Title",
         "BroadSector": "Sector",
-        "LongDescription": "Project_Description"  
+        "LongDescription": "Project_Description",
+        "DonorName" : "Donor"
     })
 
     # Selected the 7 Columns we need to display in the result.html
@@ -18,7 +19,8 @@ def get_projects(df):
         "Province",
         "Latitude",
         "Longitude",
-        "Sector"
+        "Sector",
+        "Donor"
     ]]
 
     result = selected.to_dict(orient="records")
