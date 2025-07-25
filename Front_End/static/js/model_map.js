@@ -38,6 +38,7 @@ function fetchModelProjects() {
             Province: payload.province,
             Sector: payload.sector,
             Score: 1.0,
+            Donor: "You",
             Category: "Query"
           }
         };
@@ -58,6 +59,7 @@ function fetchModelProjects() {
                 ProjectDescription: d.Project_Description,
                 Province: d.Province,
                 Sector: d.Sector,
+                Donor: d.Donor,
                 Category: "Similar"
               }
             }))
@@ -101,49 +103,60 @@ function initMap(data) {
       data: data
     });
 
-    // Add Similar Project Layer (crimson red)
+    // Add Similar Project Layer
     map.addLayer({
       id: "similar-projects",
       type: "circle",
       source: "points",
       filter: ["==", ["get", "Category"], "Similar"],
       paint: {
-        "circle-color": "#DC143C", // crimson red
+        "circle-color": "#DC143C",
         "circle-radius": 8,
         "circle-stroke-width": 2,
         "circle-stroke-color": "#fff"
       }
     });
 
-    // Add Query Project Layer (green and bigger)
+    // Add Query Project Layer
     map.addLayer({
       id: "query-project",
       type: "circle",
       source: "points",
       filter: ["==", ["get", "Category"], "Query"],
       paint: {
-        "circle-color": "#00AA00", // green
+        "circle-color": "#00AA00",
         "circle-radius": 10,
         "circle-stroke-width": 3,
         "circle-stroke-color": "#fff"
       }
     });
 
-    // Unified interactivity for both layers
     ["similar-projects", "query-project"].forEach(layerID => {
       map.on("mouseenter", layerID, e => {
         const feat = e.features?.[0];
         if (!feat) return;
         map.getCanvas().style.cursor = "pointer";
-        const { ProjectTitle, Province, Sector, Score, ProjectDescription } = feat.properties;
+
+        const {
+          ProjectTitle,
+          Province,
+          Sector,
+          Score,
+          Donor,
+          ProjectDescription
+        } = feat.properties;
+
         popup.setLngLat(feat.geometry.coordinates)
           .setHTML(`
-            <strong>Project Title:</strong> ${ProjectTitle}<br>
-            <strong>Province:</strong> ${Province}<br>
-            <strong>Sector:</strong> ${Sector}<br>
-            <strong>Score:</strong> ${Score.toFixed(3)}<br>
-            <strong>Description:</strong><br>
-            <div style="max-height:100px; overflow:auto;">${ProjectDescription}</div>
+            <div style="min-width: 380px; max-width: 400px;">
+              <strong>Project Title:</strong> ${ProjectTitle}<br>
+              <strong>Donor:</strong> ${Donor}<br>
+              <strong>Province:</strong> ${Province}<br>
+              <strong>Sector:</strong> ${Sector}<br>
+              <strong>Score:</strong> ${Score.toFixed(3)}<br>
+              <strong>Description:</strong><br>
+              <div style="max-height:100px; overflow:auto;">${ProjectDescription}</div>
+            </div>
           `)
           .addTo(map);
       });
