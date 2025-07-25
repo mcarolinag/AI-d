@@ -35,6 +35,10 @@
     .container.bg-white.rounded-4.shadow-lg {
       position: relative;
       z-index: 1; 
+    }.mapboxgl-popup-content {
+      max-width: 430px !important;
+      min-width: 400px !important;
+      width: auto !important;
     }
   </style>
 </head>
@@ -164,8 +168,9 @@
               </div>
 
               <div class="d-flex mb-2">
-                <div class="me-5"><strong>Sector:</strong> ${proj.Sector}</div>
-                <div class="me-5"><strong>Province:</strong> ${proj.Province}</div>
+                <div class="me-4"><strong>Donor:</strong> ${proj.Donor}</div>
+                <div class="me-4"><strong>Sector:</strong> ${proj.Sector}</div>
+                <div class="me-4"><strong>Province:</strong> ${proj.Province}</div>
                 <div><strong>Location:</strong> (${proj.Latitude}, ${proj.Longitude})</div>
               </div>
 
